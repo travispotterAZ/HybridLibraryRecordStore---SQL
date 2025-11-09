@@ -1,0 +1,9 @@
+Artist(artist_id(PK), artist_name(TEXT NOT NULL UNIQUE))
+Record(record_id(PK), artist_id (FK -> Artist.artist_id, NOT NULL, ON DELETE RESTRICT),
+title (TEXT NOT NULL), genre (TEXT NULL), release_year (INTEGER NULL), is_active (BOOLEAN NOT NULL DEFAULT 1), 
+UNIQUE(artist_id, title))
+
+
+records("record_id" INTEGER, "artist_id" TEXT, "title" TEXT, "release_date" TEXT, "total_tracks" INTEGER, "artist_genre" TEXT, "artist_name" TEXT)
+
+User(user_id(PK), username(TEXT NOT NULL UNIQUE), email(TEXT NOT NULL UNIQUE), password(TEXT NOT NULL))

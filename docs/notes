@@ -1,0 +1,20 @@
+
+#show the records schema#
+sqlite3 .\data\RecordCollection.db ".schema records"
+
+#show the tables in the database#
+sqlite3 .\data\RecordCollection.db ".tables"
+
+#how to view the values in the record table#
+sqlite3 .\data\RecordCollection.db "PRAGMA table_info('records');"
+
+# How to backup RecordCollection
+Copy-Item .\data\RecordCollection.db .\data\RecordCollection.db.bak -Force
+
+#Check whether other tables contain a REFERENCES to records (detect possible FK dependencies)#
+sqlite3 .\data\RecordCollection.db "SELECT name, sql FROM sqlite_master WHERE sql LIKE '%REFERENCES%records%';"
+
+#dropping a table
+sqlite3 .\data\RecordCollection.db "DROP TABLE IF EXISTS records;"
+
+sqlite3 .\data\RecordCollection.db ".read sql/schema.sql"

@@ -1,0 +1,12 @@
+Circulation
+1. A user searches for a record
+    a)searches by artist
+    b)searches by album title
+
+2. A user checks out a record
+3. A user returns a record
+
+***4. A user creates an account***
+
+Commerce
+1. A user buys a record

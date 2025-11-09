@@ -1,0 +1,14 @@
+**Core Domain**
+User(user_id (PK), role, email, full_name)
+Admin(admin_id (PK), user_id (FK→User))
+Artist(artist_id, artist_name)
+Records(record_id, title, genre, is_active)
+
+
+**Circulation**
+Checkout(checkout_id, user_id, record_id, checkout_date, return_date)
+
+
+
+**Commerce**
+Purchase(purchase_id, user_id, record_id, purchase_date, purchase_amount)
