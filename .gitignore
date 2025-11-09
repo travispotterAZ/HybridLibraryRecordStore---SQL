@@ -1,0 +1,45 @@
+# ---- OS / Editor ----
+Thumbs.db
+Desktop.ini
+.vscode/
+*.code-workspace
+
+# ---- Python (if used) ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+
+# ---- Node / JS (if used) ----
+node_modules/
+*.log
+
+# ---- SQLite / Database artifacts ----
+*.db
+*.sqlite
+*.sqlite3
+*.db-*
+*.db.*
+*.bak
+
+# ---- Data / Large raw dumps ----
+# Ignore all CSV except the canonical records.csv you want in version control
+*.csv
+!data/records.csv
+
+# ---- Archives / Compressed ----
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+
+# ---- Misc ----
+.DS_Store
+.env
+*.local
+
+# ---- Git LFS placeholders (if you start using LFS, keep patterns there) ----
+# Example: uncomment if adopting LFS later
+# *.large
