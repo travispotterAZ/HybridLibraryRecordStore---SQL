@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS Users (
   user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
   username    TEXT NOT NULL UNIQUE,
   email       TEXT NOT NULL UNIQUE,
+  is_admin    INTEGER NOT NULL DEFAULT 0 CHECK (is_admin IN (0,1)),
   password    TEXT NOT NULL,
   created_at  TEXT DEFAULT (datetime('now'))
 );
@@ -72,14 +73,11 @@ CREATE TABLE IF NOT EXISTS Loans (
 CREATE TABLE IF NOT EXISTS Charges (
   charge_id   INTEGER PRIMARY KEY AUTOINCREMENT,
   loan_id     INTEGER NOT NULL REFERENCES Loans(loan_id) ON DELETE CASCADE,
-  type        TEXT NOT NULL CHECK (type IN ('purchase')),
+  type        TEXT CHECK (type IN ('purchase')) NOT NULL,
   amount      NUMERIC(10,2) NOT NULL CHECK (amount >= 0),
   status      TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','paid','failed','void')),
   created_at  DATETIME NOT NULL DEFAULT (datetime('now'))
 );
-
-
-
 
 -- ============================================================
 -- Indexes
