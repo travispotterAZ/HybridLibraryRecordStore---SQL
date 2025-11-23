@@ -95,3 +95,6 @@ CREATE INDEX IF NOT EXISTS idx_charges_status ON Charges(status, created_at);
 -- ============================================================
 CREATE UNIQUE INDEX IF NOT EXISTS ux_copies_barcode ON Copies(barcode);
 CREATE UNIQUE INDEX IF NOT EXISTS ux_loans_active_copy ON Loans(copy_id) WHERE returned_at IS NULL;
+-- Ensure one logical record per artist+title+release_date (idempotent seed)
+CREATE UNIQUE INDEX IF NOT EXISTS ux_records_artist_title_release
+  ON Records(artist_id, title, release_date);
