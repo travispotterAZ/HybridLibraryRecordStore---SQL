@@ -39,8 +39,9 @@ CREATE TABLE IF NOT EXISTS Copies (
   copy_id     INTEGER PRIMARY KEY AUTOINCREMENT,
   record_id   INTEGER NOT NULL,
   barcode     TEXT NOT NULL UNIQUE,
+  purchase_price NUMERIC(10,2) DEFAULT 0,
   condition   TEXT DEFAULT 'GOOD' CHECK (condition IN ('NEW','GOOD','FAIR','POOR','DAMAGED')),
-  status      TEXT NOT NULL DEFAULT 'AVAILABLE' CHECK (status IN ('AVAILABLE','CHECKED_OUT','LOST','REPAIR')),
+  status      TEXT NOT NULL DEFAULT 'AVAILABLE' CHECK (status IN ('AVAILABLE','CHECKED_OUT','SOLD')),
   FOREIGN KEY (record_id) REFERENCES Records(record_id) ON DELETE CASCADE
 );
 
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS Loans (
   checked_out_at DATETIME NOT NULL DEFAULT (datetime('now')),
   due_at         DATETIME NOT NULL,
   returned_at    DATETIME,
+  status       TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE','RETURNED','PURCHASED')),
   price_at_checkout NUMERIC(10,2) NOT NULL DEFAULT 0,
   purchase_converted_at DATETIME,
   notes          TEXT,
@@ -98,3 +100,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_loans_active_copy ON Loans(copy_id) WHERE r
 -- Ensure one logical record per artist+title+release_date (idempotent seed)
 CREATE UNIQUE INDEX IF NOT EXISTS ux_records_artist_title_release
   ON Records(artist_id, title, release_date);
+  -- Prevnet duplicate purchase charges per loan
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_purchase_per_loan
+  ON Charges(loan_id, type);
