@@ -4,8 +4,8 @@ PRAGMA foreign_keys = ON;
 -- Note: Run this script from the repository root (so data/ path resolves), e.g.:
 --   sqlite3 RecordCollection_V2.db ".read sql/schemas.sql" ".read sql/seed.sql"
 
--- Start a transaction for faster, atomic seeding
-BEGIN TRANSACTION;
+-- Use a savepoint so the seed works even if a transaction is already open
+SAVEPOINT seed_run;
 
 -- Drop temp table if it exists from previous run
 DROP TABLE IF EXISTS temp_records;
@@ -101,5 +101,5 @@ FROM (
 ) seed
 WHERE (SELECT COUNT(*) FROM Users) = 0;
 
--- Commit seeding
-COMMIT;
+-- Release savepoint (acts like COMMIT for this block, works inside transactions)
+RELEASE seed_run;
