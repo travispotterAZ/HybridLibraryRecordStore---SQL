@@ -51,19 +51,36 @@ DROP TABLE temp_records;
 -- Seed Copies: create K physical copies per active record
 -- Idempotent: only inserts missing barcodes per record
 -- Change K below to adjust copies per record (default: 3)
-WITH RECURSIVE params(K) AS (VALUES(3)),
+-- Randomly assigns one of {12.99, 19.99, 29.99, 39.99} per record_id (all copies share same price)
+WITH RECURSIVE 
+params(K) AS (VALUES(3)),
 nums(n) AS (
     SELECT 1
     UNION ALL
     SELECT n+1 FROM nums, params WHERE n < (SELECT K FROM params)
+),
+-- Generate a stable random price per record_id using modulo on record_id
+record_prices AS (
+    SELECT 
+        record_id,
+        CASE (record_id % 4)
+            WHEN 0 THEN 12.99
+            WHEN 1 THEN 19.99
+            WHEN 2 THEN 29.99
+            ELSE 39.99
+        END AS price
+    FROM Records
+    WHERE is_active = 1
 )
-INSERT INTO Copies (record_id, barcode, condition, status)
+INSERT INTO Copies (record_id, barcode, purchase_price, condition, status)
 SELECT r.record_id,
              'R' || r.record_id || '-C' || n AS barcode,
+             rp.price AS purchase_price,
              'GOOD' AS condition,
              'AVAILABLE' AS status
 FROM Records r
 CROSS JOIN nums
+JOIN record_prices rp ON rp.record_id = r.record_id
 LEFT JOIN Copies c
     ON c.record_id = r.record_id
  AND c.barcode   = 'R' || r.record_id || '-C' || n
