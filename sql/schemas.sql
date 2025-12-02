@@ -82,6 +82,117 @@ CREATE TABLE IF NOT EXISTS Charges (
 );
 
 -- ============================================================
+-- E-commerce: carts, orders, payments
+-- ============================================================
+
+-- ------------------------------------------------------------
+-- Shopping cart items
+-- One row per item in a user's cart. For unique vinyl copies,
+-- quantity will normally be 1 and copy_id will be used.
+-- record_id support lets you later sell non-unique items too.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS CartItems (
+  cart_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id      INTEGER NOT NULL,
+  copy_id      INTEGER,  -- for unique physical copies
+  record_id    INTEGER,  -- optional, for generic record-level items
+  quantity     INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  added_at     DATETIME NOT NULL DEFAULT (datetime('now')),
+
+  FOREIGN KEY (user_id)   REFERENCES Users(user_id)   ON DELETE CASCADE,
+  FOREIGN KEY (copy_id)   REFERENCES Copies(copy_id)  ON DELETE CASCADE,
+  FOREIGN KEY (record_id) REFERENCES Records(record_id) ON DELETE CASCADE,
+
+  -- Ensure at least one of copy_id or record_id is set
+  CHECK (copy_id IS NOT NULL OR record_id IS NOT NULL),
+
+  -- Prevent duplicate cart entries for the same user+copy
+  UNIQUE (user_id, copy_id)
+);
+
+-- ------------------------------------------------------------
+-- Orders (top-level purchase records)
+-- Represents a completed checkout of one or more items.
+-- You can simulate taxes now or leave them at 0.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Orders (
+  order_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id       INTEGER NOT NULL,
+  status        TEXT NOT NULL DEFAULT 'pending'
+                 CHECK (status IN ('pending','paid','shipped','completed','cancelled')),
+  subtotal      NUMERIC(10,2) NOT NULL DEFAULT 0,
+  tax_amount    NUMERIC(10,2) NOT NULL DEFAULT 0,
+  total_amount  NUMERIC(10,2) NOT NULL DEFAULT 0,
+  created_at    DATETIME NOT NULL DEFAULT (datetime('now')),
+  updated_at    DATETIME,
+
+  -- Simple shipping info for now; you can normalize later if needed
+  shipping_name    TEXT,
+  shipping_address TEXT,
+  notes            TEXT,
+
+  FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
+
+-- ------------------------------------------------------------
+-- OrderItems (line items within an order)
+-- For this project, you'll mostly use copy_id (unique vinyl).
+-- record_id is optional if you ever want generic record-based items.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS OrderItems (
+  order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  order_id      INTEGER NOT NULL,
+  copy_id       INTEGER,
+  record_id     INTEGER,
+  description   TEXT,  -- snapshot description (e.g., title, artist, condition)
+  unit_price    NUMERIC(10,2) NOT NULL,
+  quantity      INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  line_total    NUMERIC(10,2) NOT NULL,
+
+  FOREIGN KEY (order_id)  REFERENCES Orders(order_id)   ON DELETE CASCADE,
+  FOREIGN KEY (copy_id)   REFERENCES Copies(copy_id)    ON DELETE SET NULL,
+  FOREIGN KEY (record_id) REFERENCES Records(record_id) ON DELETE SET NULL,
+
+  -- Must reference at least a copy or a record
+  CHECK (copy_id IS NOT NULL OR record_id IS NOT NULL)
+);
+
+-- ------------------------------------------------------------
+-- Payments
+-- Logical payment events for an order (you can simulate them in CLI).
+-- Charges table remains tied to Loans; Payments are tied to Orders.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Payments (
+  payment_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  order_id        INTEGER NOT NULL,
+  amount          NUMERIC(10,2) NOT NULL CHECK (amount >= 0),
+  method          TEXT NOT NULL,  -- e.g. 'card','cash','test','paypal'
+  status          TEXT NOT NULL DEFAULT 'pending'
+                   CHECK (status IN ('pending','authorized','captured','failed','refunded','void')),
+  transaction_ref TEXT,           -- for future payment gateway IDs
+  processed_at    DATETIME NOT NULL DEFAULT (datetime('now')),
+
+  FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- E-commerce indexes
+-- ============================================================
+
+CREATE INDEX IF NOT EXISTS idx_cartitems_user
+  ON CartItems(user_id, added_at);
+
+CREATE INDEX IF NOT EXISTS idx_orders_user_created
+  ON Orders(user_id, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_orderitems_order
+  ON OrderItems(order_id);
+
+CREATE INDEX IF NOT EXISTS idx_payments_order
+  ON Payments(order_id, processed_at);
+
+
+-- ============================================================
 -- Indexes
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_copies_record ON Copies(record_id);
