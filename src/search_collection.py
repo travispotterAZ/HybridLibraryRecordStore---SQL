@@ -19,7 +19,7 @@ def get_available_copies(conn, record_id):
         """
         SELECT c.copy_id
         FROM Copies c
-        WHERE c.record_id = ?
+                WHERE c.record_id = ?
                     AND c.status = 'AVAILABLE'
           AND NOT EXISTS (
               SELECT 1
@@ -27,6 +27,11 @@ def get_available_copies(conn, record_id):
               WHERE l.copy_id = c.copy_id
                 AND l.returned_at IS NULL
           )
+                    AND NOT EXISTS (
+                            SELECT 1
+                            FROM CartItems ci
+                            WHERE ci.copy_id = c.copy_id
+                    )
         ORDER BY c.copy_id;
         """,
         (record_id,),

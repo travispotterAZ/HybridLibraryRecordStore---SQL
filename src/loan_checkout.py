@@ -51,7 +51,15 @@ def get_copy_details(conn, copy_id: int):
     ).fetchone()
 
 
-def validate_checkout(user, copy):
+def is_copy_in_cart(conn, copy_id: int) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM CartItems WHERE copy_id = ? LIMIT 1",
+        (copy_id,),
+    ).fetchone()
+    return row is not None
+
+
+def validate_checkout(conn, user, copy):
     """
     Validate that the checkout can proceed.
     Raises ValueError if validation fails.
@@ -66,6 +74,12 @@ def validate_checkout(user, copy):
         raise ValueError(
             f"Copy {copy['copy_id']} is not available for checkout. "
             f"Current status: {copy['status']}"
+        )
+
+    # Block if the copy is currently in any cart
+    if is_copy_in_cart(conn, copy["copy_id"]):
+        raise ValueError(
+            f"Copy {copy['copy_id']} is currently reserved in a cart and cannot be loaned."
         )
 
 
@@ -191,7 +205,7 @@ def main():
         copy = get_copy_details(conn, args.copy_id)
 
         # Validate checkout
-        validate_checkout(user, copy)
+        validate_checkout(conn, user, copy)
 
         # Begin transaction
         conn.execute("BEGIN TRANSACTION;")

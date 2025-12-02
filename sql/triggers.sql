@@ -35,3 +35,26 @@ BEGIN
   SET status = 'AVAILABLE'
   WHERE copy_id = OLD.copy_id;
 END;
+
+-- ------------------------------------------------------------
+-- Cart/Loan coordination
+-- Ensure a copy can't be loaned while it's in any cart,
+-- and prevent the same copy from being in multiple carts.
+-- ------------------------------------------------------------
+
+-- Unique index so a given copy_id can appear in at most one cart row
+CREATE UNIQUE INDEX IF NOT EXISTS ux_cartitems_copy_unique
+ON CartItems(copy_id)
+WHERE copy_id IS NOT NULL;
+
+-- Block loan inserts if the copy is currently in any cart
+CREATE TRIGGER IF NOT EXISTS trg_loan_block_if_in_cart
+BEFORE INSERT ON Loans
+WHEN EXISTS (
+  SELECT 1
+  FROM CartItems ci
+  WHERE ci.copy_id = NEW.copy_id
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Copy is currently in a cart');
+END;
