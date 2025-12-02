@@ -14,14 +14,14 @@ INSERT INTO Loans (
   notes
 )
 SELECT
-  2,                          -- user_id
+   ,                          -- user_id
   c.copy_id,                  -- copy_id
   c.record_id,                -- record_id
   datetime('now','+7 days'),  -- due_at
   39.99,                      -- price_at_checkout
   'Standard 7-day checkout'
 FROM Copies c
-WHERE c.copy_id = 22
+WHERE c.copy_id = 
   AND c.status = 'AVAILABLE';
 
 
@@ -30,7 +30,7 @@ WHERE c.copy_id = 22
 -- ============================================================
 UPDATE Copies
 SET status = 'CHECKED_OUT'
-WHERE copy_id = 22
+WHERE copy_id = 
   AND status = 'AVAILABLE';
 
 

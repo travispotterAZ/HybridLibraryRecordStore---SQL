@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sqlite3
 
-DB_PATH = "data/main.db"
+DB_PATH = "data/main_V2.db"
 
 
 def get_connection():
@@ -20,6 +20,7 @@ def get_available_copies(conn, record_id):
         SELECT c.copy_id
         FROM Copies c
         WHERE c.record_id = ?
+                    AND c.status = 'AVAILABLE'
           AND NOT EXISTS (
               SELECT 1
               FROM Loans l
@@ -89,9 +90,9 @@ def search_records(conn, mode, term):
     for row in rows:
         record_id = row["record_id"]
 
-        # total copies for this record
+        # total copies for this record (only those currently AVAILABLE)
         total_copies = conn.execute(
-            "SELECT COUNT(*) AS cnt FROM Copies WHERE record_id = ?;",
+            "SELECT COUNT(*) AS cnt FROM Copies WHERE record_id = ? AND status = 'AVAILABLE';",
             (record_id,),
         ).fetchone()["cnt"]
 

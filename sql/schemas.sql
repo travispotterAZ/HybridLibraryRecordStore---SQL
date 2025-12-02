@@ -178,19 +178,10 @@ CREATE TABLE IF NOT EXISTS Payments (
 -- ============================================================
 -- E-commerce indexes
 -- ============================================================
-
-CREATE INDEX IF NOT EXISTS idx_cartitems_user
-  ON CartItems(user_id, added_at);
-
-CREATE INDEX IF NOT EXISTS idx_orders_user_created
-  ON Orders(user_id, created_at);
-
-CREATE INDEX IF NOT EXISTS idx_orderitems_order
-  ON OrderItems(order_id);
-
-CREATE INDEX IF NOT EXISTS idx_payments_order
-  ON Payments(order_id, processed_at);
-
+CREATE INDEX IF NOT EXISTS idx_cartitems_user ON CartItems(user_id, added_at);
+CREATE INDEX IF NOT EXISTS idx_orders_user_created ON Orders(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_orderitems_order ON OrderItems(order_id);
+CREATE INDEX IF NOT EXISTS idx_payments_order ON Payments(order_id, processed_at);
 
 -- ============================================================
 -- Indexes
@@ -209,8 +200,6 @@ CREATE INDEX IF NOT EXISTS idx_charges_status ON Charges(status, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS ux_copies_barcode ON Copies(barcode);
 CREATE UNIQUE INDEX IF NOT EXISTS ux_loans_active_copy ON Loans(copy_id) WHERE returned_at IS NULL;
 -- Ensure one logical record per artist+title+release_date (idempotent seed)
-CREATE UNIQUE INDEX IF NOT EXISTS ux_records_artist_title_release
-  ON Records(artist_id, title, release_date);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_records_artist_title_release ON Records(artist_id, title, release_date);
   -- Prevnet duplicate purchase charges per loan
-CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_purchase_per_loan
-  ON Charges(loan_id, type);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_purchase_per_loan ON Charges(loan_id, type);
