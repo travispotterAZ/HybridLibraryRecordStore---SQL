@@ -170,7 +170,7 @@ def format_table(rows: List[sqlite3.Row]) -> str:
         overdue = is_overdue(row["due_at"])
         if overdue:
             overdue_count += 1
-        status = "⚠ OVERDUE" if overdue else "Active"
+        status = "OVERDUE" if overdue else "Active"
         data.append(
             [
                 str(row["loan_id"]),
