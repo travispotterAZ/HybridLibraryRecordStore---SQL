@@ -117,6 +117,9 @@ def main():
     if loan_id is None:
         if user_id is None:
             try:
+                print("=========================================")
+                print("=== Vinyl Record Library - Return Loan ===")
+                print("=========================================")
                 user_id = int(input("Enter user_id: ").strip())
             except ValueError:
                 print("Invalid user_id.")

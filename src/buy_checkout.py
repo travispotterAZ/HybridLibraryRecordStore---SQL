@@ -230,6 +230,9 @@ def main():
 
     if args.user_id is None:
         try:
+            print("=========================================")
+            print("=== Vinyl Record Library - Checkout Cart ===")   
+            print("=========================================")
             args.user_id = int(input("Enter user_id to checkout: ").strip())
         except ValueError:
             print("Invalid user_id.")

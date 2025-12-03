@@ -149,6 +149,7 @@ def print_checkout_summary(user, copy, loan_id, due_date):
     print(f"Record:      {copy['title']}")
     print(f"Artist:      {copy['artist_name']}")
     print(f"Copy ID:     {copy['copy_id']}")
+    print(f"Record ID:   {copy['record_id']}")
     print(f"Barcode:     {copy['barcode']}")
     print(f"Condition:   {copy['condition']}")
     print()
@@ -178,8 +179,13 @@ def main():
 
     # Prompt for user_id if not provided
     if args.user_id is None:
+        print("=========================================")
+        print("    Vinyl Record Loans")
+        print("=========================================")
         try:
-            args.user_id = int(input("Enter user_id: ").strip())
+            args.user_id = int(
+                input("Please enter user id to begin the Loan process: ").strip()
+            )
         except ValueError:
             print("Invalid user_id. Must be an integer.")
             sys.exit(1)

@@ -24,7 +24,9 @@ def username_or_email_taken(cur, username, email):
 
 
 def register_user():
+    print("================================================")
     print("=== Vinyl Record Library - User Registration ===")
+    print("================================================")
     print("Press Ctrl+C at any time to quit.\n")
 
     # 1) Collect input

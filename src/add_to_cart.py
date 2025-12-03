@@ -132,6 +132,9 @@ def main():
     # Interactive fallback if args were omitted
     if args.user_id is None:
         try:
+            print("=========================================")
+            print("=== Vinyl Record Library - Add to Cart ===")
+            print("=========================================")
             args.user_id = int(input("Enter user_id: ").strip())
         except ValueError:
             print("Invalid user_id.")
