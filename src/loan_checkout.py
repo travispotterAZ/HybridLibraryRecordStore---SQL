@@ -105,7 +105,7 @@ def create_loan(conn, user_id: int, copy_id: int, copy):
             copy_id,
             copy["record_id"],
             f"+{LOAN_DURATION_DAYS} days",
-            DEFAULT_PRICE,
+            (copy["purchase_price"] if copy["purchase_price"] is not None else DEFAULT_PRICE),
             f"Standard {LOAN_DURATION_DAYS}-day checkout",
         ),
     )
@@ -130,9 +130,11 @@ def create_pending_charge(conn, loan_id: int):
     conn.execute(
         """
         INSERT INTO Charges (loan_id, type, amount, status)
-        VALUES (?, 'purchase', ?, 'pending')
+        SELECT ?, 'purchase', COALESCE(l.price_at_checkout, ?), 'pending'
+        FROM Loans l
+        WHERE l.loan_id = ?
         """,
-        (loan_id, DEFAULT_PRICE),
+        (loan_id, DEFAULT_PRICE, loan_id),
     )
 
 
@@ -158,7 +160,8 @@ def print_checkout_summary(user, copy, loan_id, due_date):
     print(f"Due Date:    {due_date}")
     print(f"Duration:    {LOAN_DURATION_DAYS} days")
     print()
-    print(f"Price:       ${DEFAULT_PRICE:.2f} (if purchased)")
+    price = copy["purchase_price"] if copy["purchase_price"] is not None else DEFAULT_PRICE
+    print(f"Price:       ${price:.2f} (if purchased)")
     print()
     print("=" * 60)
     print()
