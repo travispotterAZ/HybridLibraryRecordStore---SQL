@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sqlite3
 
-DB_PATH = "data/main_V2.db"
+DB_PATH = "data/main.db"
 
 
 def get_connection():
@@ -77,8 +77,7 @@ def search_records(conn, mode, term):
 
     like_param = f"%{term}%"
 
-    rows = conn.execute(
-        f"""
+    query = f"""
         SELECT
             r.record_id,
             r.title,
@@ -87,9 +86,9 @@ def search_records(conn, mode, term):
         JOIN Artists a ON r.artist_id = a.artist_id
         WHERE {where_clause}
         ORDER BY a.artist_name, r.title;
-        """,
-        (like_param,),
-    ).fetchall()
+        """
+
+    rows = conn.execute(query, (like_param,)).fetchall()
 
     results = []
     for row in rows:

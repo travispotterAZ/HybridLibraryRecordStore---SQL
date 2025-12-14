@@ -3,7 +3,7 @@ import argparse
 import sqlite3
 import sys
 
-DB_PATH = "data/main_V2.db"
+DB_PATH = "data/main.db"
 
 
 def get_connection():

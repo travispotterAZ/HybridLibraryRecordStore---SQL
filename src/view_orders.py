@@ -5,7 +5,7 @@ import sys
 import json
 from typing import Optional, List
 
-DB_PATH = "data/main_V2.db"
+DB_PATH = "data/main.db"
 
 
 def get_connection():

@@ -3,11 +3,11 @@
 import sqlite3
 from getpass import getpass
 
-DB_PATH = "main_V2.db"  # make sure this matches your DB file name
+DB_PATH = "main.db"  # make sure this matches your DB file name
 
 
 def connect_db():
-    return sqlite3.connect("data/main_V2.db")
+    return sqlite3.connect("data/main.db")
     
 
 

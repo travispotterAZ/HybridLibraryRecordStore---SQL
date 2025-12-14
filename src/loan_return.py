@@ -14,7 +14,7 @@ import sqlite3
 import sys
 from typing import Optional, Tuple
 
-DB_PATH = "data/main_V2.db"
+DB_PATH = "data/main.db"
 
 
 def get_connection():

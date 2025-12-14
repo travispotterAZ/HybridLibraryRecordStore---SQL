@@ -26,8 +26,8 @@ def get_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--db",
-        default="data/main_V2.db",
-        help="Path to SQLite database (default: data/main_V2.db)",
+        default="data/main.db",
+        help="Path to SQLite database (default: data/main.db)",
     )
     parser.add_argument(
         "--user-id",

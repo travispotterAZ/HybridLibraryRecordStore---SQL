@@ -3,7 +3,7 @@ import argparse
 import sqlite3
 import sys
 
-DB_PATH = "data/main_V2.db"
+DB_PATH = "data/main.db"
 
 
 def get_connection():
@@ -91,6 +91,9 @@ def main():
 
     if args.user_id is None:
         try:
+            print("===========================================")
+            print("=== Vinyl Record Library - View Cart ===")
+            print("===========================================")
             args.user_id = int(input("Enter user_id: ").strip())
         except ValueError:
             print("Invalid user_id.")
